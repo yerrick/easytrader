@@ -105,7 +105,7 @@ class GFTrader(WebTrader):
             unquote_str = urllib.parse.unquote(params_str)
         url = self.trade_prefix + '?' + unquote_str
         r = self.s.post(url)
-        log.debug('raw response: {}'.format(r.text))
+        #log.debug('raw response: {}'.format(r.text))
         return r.content
 
     def format_response_data(self, data):
