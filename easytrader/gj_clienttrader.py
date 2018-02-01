@@ -35,6 +35,15 @@ class GJClientTrader(YHClientTrader):
         """
         try:
             self._app = pywinauto.Application().connect(path=self._run_exe_path(exe_path), timeout=1)
+            try:
+                tmp = self._app.window(title_re='网上股票交易系统.*').wait('visible',timeout=5)
+                print('Reconnect',tmp.window_text())
+            except Exception as e:
+                print('Reconnect fail')
+                print(e)
+                self._app.kill()
+                raise e
+
         except Exception:
             self._app = pywinauto.Application().start(exe_path)
 
@@ -42,11 +51,18 @@ class GJClientTrader(YHClientTrader):
             while True:
                 try:
                     self._app.top_window().Edit1.wait('ready')
+                    print('Edit1 ready')
                     break
                 except RuntimeError:
                     pass
-
             self._app.top_window().Edit1.type_keys(user)
+            while True:
+                try:
+                    self._app.top_window().Edit2.wait('ready')
+                    print('Edit2 ready')
+                    break
+                except RuntimeError:
+                    pass
             self._app.top_window().Edit2.type_keys(password)
             edit3 = self._app.top_window().window(control_id=0x3eb)
             while True:
@@ -63,7 +79,7 @@ class GJClientTrader(YHClientTrader):
                     try:
                         self._app.window(title_re='用户登录.*').wait_not('exists',timeout=5)
                         print('Login window closed')
-                        tmp = self._app.window(title_re='网上股票交易系统.*').wait('exists',timeout=5)
+                        tmp = self._app.window(title_re='网上股票交易系统.*').wait('visible',timeout=5)
                         print('Open',tmp.window_text())
                         print("ReCheck Login...")
                         self._wait(2)
