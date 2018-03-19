@@ -197,7 +197,7 @@ class YHClientTrader(ClientTrader):
         return re.search(r'\d+', content).group()
 
     def _submit_trade(self):
-        time.sleep(0.05)
+        time.sleep(0.2)
         self._main.window(
             control_id=self._config.TRADE_SUBMIT_CONTROL_ID,
             class_name='Button'
