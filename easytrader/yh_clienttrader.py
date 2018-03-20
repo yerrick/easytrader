@@ -172,6 +172,8 @@ class YHClientTrader(ClientTrader):
 
         self._submit_trade()
 
+        time.sleep(0.1)
+        
         while self._main.wrapper_object() != self._app.top_window().wrapper_object():
             pop_title = self._get_pop_dialog_title()
             if pop_title == '委托确认':
@@ -197,7 +199,7 @@ class YHClientTrader(ClientTrader):
         return re.search(r'\d+', content).group()
 
     def _submit_trade(self):
-        time.sleep(0.2)
+        time.sleep(0.05)
         self._main.window(
             control_id=self._config.TRADE_SUBMIT_CONTROL_ID,
             class_name='Button'
