@@ -253,6 +253,9 @@ class YHClientTrader(ClientTrader):
         self._get_left_menus_handle().get_item(path).click()
         self._wait(sleep)
 
+    def switch_left_menus(self,path,sleep=1):
+        self._switch_left_menus(path,sleep)
+
     def _switch_left_menus_by_shortcut(self, shortcut, sleep=0.5):
         self._app.top_window().type_keys(shortcut)
         self._wait(sleep)

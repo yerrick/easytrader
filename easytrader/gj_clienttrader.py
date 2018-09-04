@@ -132,3 +132,4 @@ class GJClientTrader(YHClientTrader):
         else:
             print('No Entrusts to Cancel')
         return
+
