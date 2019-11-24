@@ -240,7 +240,7 @@ class YHClientTrader(ClientTrader):
         self._main.window(
             control_id=control_id,
             class_name='Edit'
-        ).type_keys(text)
+        ).set_edit_text(text)
 
     def _get_clipboard_data(self):
         while True:
@@ -250,7 +250,7 @@ class YHClientTrader(ClientTrader):
                 log.warning('{}, retry ......'.format(e))
 
     def _switch_left_menus(self, path, sleep=0.2):
-        self._get_left_menus_handle().get_item(path).click()
+        self._get_left_menus_handle().get_item(path).select()
         self._wait(sleep)
 
     def switch_left_menus(self,path,sleep=1):

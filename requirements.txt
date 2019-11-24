@@ -11,3 +11,4 @@ pytesseract
 pandas
 pyperclip
 rqopen-client
+easyutils==0.1.7

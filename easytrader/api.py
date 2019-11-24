@@ -37,6 +37,9 @@ def use(broker, debug=True, **kwargs):
     elif broker.lower() in ['gj_client', '国金客户端']:
         from .gj_clienttrader import GJClientTrader
         return GJClientTrader()
+    elif broker.lower() in ['gj_client_v2', '国金客户端']:
+        from .gj_clienttrader_v2 import GJClientTraderV2
+        return GJClientTraderV2()
 
 
 def follower(platform, **kwargs):

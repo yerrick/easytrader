@@ -74,8 +74,20 @@ def recognize_verify_code(image_path, broker='ht'):
         return detect_gf_result(image_path)
     elif broker == 'yh_client':
         return detect_yh_client_result(image_path)
+    elif broker == 'gj_client_v2':
+        return detect_gjv2_result(image_path)
     # 调用 tesseract 识别
     return default_verify_code_detect(image_path)
+
+def detect_gjv2_result(image_path):
+    # from PIL import Image
+    import pytesseract
+    try:
+        res = pytesseract.image_to_string(image_path,config='--psm 7 -c tessedit_char_whitelist=0123456789')
+    except FileNotFoundError:
+        raise Exception('tesseract 未安装，请至 https://github.com/tesseract-ocr/tesseract/wiki 查看安装教程')
+    valid_chars = re.findall('[0-9a-z]', res, re.IGNORECASE)
+    return ''.join(valid_chars)
 
 
 def detect_yh_client_result(image_path):
