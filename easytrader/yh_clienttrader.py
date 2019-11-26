@@ -7,6 +7,7 @@ import os
 import re
 import tempfile
 import time
+import traceback
 
 import easyutils
 import pandas as pd
@@ -173,15 +174,19 @@ class YHClientTrader(ClientTrader):
         self._submit_trade()
         self._wait(0.2)
         
+        confirmed = False
         while self._main.wrapper_object() != self._app.top_window().wrapper_object():
             try:
                 pop_title = self._get_pop_dialog_title()
                 print(pop_title)
                 if pop_title == '委托确认':
                     self._app.top_window().type_keys('%Y')
+                    confirmed = True
                 elif pop_title == '提示信息':
                     if '超出涨跌停' in self._app.top_window().Static.window_text():
                         self._app.top_window().type_keys('%Y')
+                    else:
+                        raise exceptions.TradeError("confirmed" if confirmed else "not_confirmed")
                 elif pop_title == '提示':
                     content = self._app.top_window().Static.window_text()
                     if '成功' in content:
@@ -195,8 +200,10 @@ class YHClientTrader(ClientTrader):
                 else:
                     self._app.top_window().close()
             except Exception as e:
-                if self._main.wrapper_object() != self._app.top_window().wrapper_object():
+                if not confirmed:
                     self._app.top_window().close()
+                    print("not_confirmed with exception as:\n",traceback.format_exc())
+                    raise exceptions.TradeError("not_confirmed")
                 raise e
             self._wait(0.2)  # wait next dialog display
 
