@@ -114,12 +114,12 @@ class YHClientTrader(ClientTrader):
 
     def buy(self, security, price, amount, **kwargs):
         self._switch_left_menus(['买入[F1]'])
-
+        self._wait(0.2)
         return self.trade(security, price, amount)
 
     def sell(self, security, price, amount, **kwargs):
         self._switch_left_menus(['卖出[F2]'])
-
+        self._wait(0.2)
         return self.trade(security, price, amount)
 
     @property
@@ -169,37 +169,42 @@ class YHClientTrader(ClientTrader):
 
     def trade(self, security, price, amount):
         self._set_trade_params(security, price, amount)
-
+        self._wait(0.2)
         self._submit_trade()
-
-        time.sleep(0.1)
+        self._wait(0.2)
         
         while self._main.wrapper_object() != self._app.top_window().wrapper_object():
-            pop_title = self._get_pop_dialog_title()
-            if pop_title == '委托确认':
-                self._app.top_window().type_keys('%Y')
-            elif pop_title == '提示信息':
-                if '超出涨跌停' in self._app.top_window().Static.window_text():
+            try:
+                pop_title = self._get_pop_dialog_title()
+                print(pop_title)
+                if pop_title == '委托确认':
                     self._app.top_window().type_keys('%Y')
-            elif pop_title == '提示':
-                content = self._app.top_window().Static.window_text()
-                if '成功' in content:
-                    entrust_no = self._extract_entrust_id(content)
-                    self._app.top_window()['确定'].click()
-                    return {'entrust_no': entrust_no}
+                elif pop_title == '提示信息':
+                    if '超出涨跌停' in self._app.top_window().Static.window_text():
+                        self._app.top_window().type_keys('%Y')
+                elif pop_title == '提示':
+                    content = self._app.top_window().Static.window_text()
+                    if '成功' in content:
+                        entrust_no = self._extract_entrust_id(content)
+                        self._app.top_window()['确定'].click()
+                        return {'entrust_no': entrust_no}
+                    else:
+                        self._app.top_window()['确定'].click()
+                        self._wait(0.05)
+                        raise exceptions.TradeError(content)
                 else:
-                    self._app.top_window()['确定'].click()
-                    self._wait(0.05)
-                    raise exceptions.TradeError(content)
-            else:
-                self._app.top_window().close()
+                    self._app.top_window().close()
+            except Exception as e:
+                if self._main.wrapper_object() != self._app.top_window().wrapper_object():
+                    self._app.top_window().close()
+                raise e
             self._wait(0.2)  # wait next dialog display
 
     def _extract_entrust_id(self, content):
         return re.search(r'\d+', content).group()
 
     def _submit_trade(self):
-        time.sleep(0.05)
+        self._wait(0.05)
         self._main.window(
             control_id=self._config.TRADE_SUBMIT_CONTROL_ID,
             class_name='Button'
@@ -212,7 +217,6 @@ class YHClientTrader(ClientTrader):
 
     def _set_trade_params(self, security, price, amount):
         code = security[-6:]
-
         self._type_keys(
             self._config.TRADE_SECURITY_CONTROL_ID,
             code
