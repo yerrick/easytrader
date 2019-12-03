@@ -124,8 +124,17 @@ class GJClientTrader(YHClientTrader):
         grid = self._main.window(
             control_id=controlid, class_name="CVirtualGridCtrl"
         )
+        grid.set_focus()
+        time.sleep(0.5)
 
         # ctrl+s 保存 grid 内容为 xls 文件
+        # grid.right_click(coords=(100,100))
+        # plan1:
+        # pywinauto.keyboard.send_keys('s')
+        # plan2:
+        # bb = self._app.PopupMenu.wrapper_object();
+        # reccord = bb.rectangle()
+        # pywinauto.mouse.click(coords=(reccord.left+100,reccord.top+110))
         grid.type_keys("^s")
         time.sleep(1)
 
@@ -150,7 +159,8 @@ class GJClientTrader(YHClientTrader):
     def cancel_all_entrusts(self):
         self._refresh()
         self._switch_left_menus(['撤单[F3]'],1)
-        total_len = len(self._get_grid_data_fromfile(self._config.COMMON_GRID_CONTROL_ID))
+        # total_len = len(self._get_grid_data_fromfile(self._config.COMMON_GRID_CONTROL_ID))
+        total_len = 2
         if total_len==1:            
             print('%d Entrusts to Cancel'%total_len)
             self._main.window(control_id=0x7531).click()
